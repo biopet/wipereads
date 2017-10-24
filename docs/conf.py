@@ -167,7 +167,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'WipeReads', u'WipeReads Documentation',
-     author, 'WipeReadse', 'One line description of project.',
+     author, 'WipeReadse', 'Remove reads from indexed BAM files that are inside a user defined region.',
      'Miscellaneous'),
 ]
 
