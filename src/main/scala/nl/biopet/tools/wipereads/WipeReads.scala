@@ -13,7 +13,7 @@ import scala.collection.JavaConverters._
 import scala.io.Source
 import scala.math.{max, min}
 
-object WipeReads extends ToolCommand {
+object WipeReads extends ToolCommand[Args] {
   def main(args: Array[String]): Unit = {
     val parser = new ArgsParser(toolName)
     val cmdArgs =
