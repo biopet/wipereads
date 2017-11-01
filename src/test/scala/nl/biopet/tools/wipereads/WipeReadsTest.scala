@@ -14,6 +14,7 @@ import org.testng.annotations.Test
 import scala.collection.JavaConverters._
 
 class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
+  def toolCommand: WipeReads.type = WipeReads
 
   import WipeReads._
 
