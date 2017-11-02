@@ -5,7 +5,7 @@ import java.nio.file.Paths
 
 import htsjdk.samtools.util.Interval
 import htsjdk.samtools._
-import nl.biopet.test.BiopetTest
+import nl.biopet.utils.test.tools.ToolTest
 import org.mockito.Matchers.anyObject
 import org.mockito.Mockito.{inOrder => inOrd, times, verify}
 import org.scalatest.mock.MockitoSugar
@@ -13,7 +13,8 @@ import org.testng.annotations.Test
 
 import scala.collection.JavaConverters._
 
-class WipeReadsTest extends BiopetTest with MockitoSugar {
+class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
+  def toolCommand: WipeReads.type = WipeReads
 
   import WipeReads._
 
