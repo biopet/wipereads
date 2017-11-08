@@ -23,8 +23,8 @@ object WipeReads extends ToolCommand[Args] {
 
     // cannot use SamReader as inBam directly since it only allows one active iterator at any given time
     val filterFunc = makeFilterNotFunction(
-      ivl =
-        makeIntervalFromFile(cmdArgs.targetRegions, gtfFeatureType = cmdArgs.featureType),
+      ivl = makeIntervalFromFile(cmdArgs.targetRegions,
+                                 gtfFeatureType = cmdArgs.featureType),
       inBam = cmdArgs.inputBam,
       filterOutMulti = !cmdArgs.limitToRegion,
       minMapQ = cmdArgs.minMapQ,
@@ -37,8 +37,8 @@ object WipeReads extends ToolCommand[Args] {
       filterFunc,
       prepInBam(cmdArgs.inputBam),
       prepOutBam(cmdArgs.outputBam,
-        cmdArgs.inputBam,
-        writeIndex = !cmdArgs.noMakeIndex),
+                 cmdArgs.inputBam,
+                 writeIndex = !cmdArgs.noMakeIndex),
       cmdArgs.filteredOutBam.map(x =>
         prepOutBam(x, cmdArgs.inputBam, writeIndex = !cmdArgs.noMakeIndex))
     )
@@ -71,7 +71,8 @@ object WipeReads extends ToolCommand[Args] {
     *
     * @param inFile input interval file
     */
-  def makeIntervalFromFile(inFile: File, gtfFeatureType: String = "exon"): List[Interval] = {
+  def makeIntervalFromFile(inFile: File,
+                           gtfFeatureType: String = "exon"): List[Interval] = {
 
     logger.info("Parsing interval file ...")
 
@@ -103,7 +104,8 @@ object WipeReads extends ToolCommand[Args] {
         // zip exonStarts and exonEnds, note the index was reversed because we did .reverse above
         .map(x => (x._1, x._2(1).zip(x._2(0))))
         // make Intervals, accounting for the fact that refFlat coordinates are 0-based
-        .map(x => x._2.map(y => new Interval(x._1, y._1.toInt + 1, y._2.toInt)))
+        .map(x =>
+          x._2.map(y => new Interval(x._1, y._1.toInt + 1, y._2.toInt)))
         // flatten sublist
         .flatten
 
@@ -138,7 +140,8 @@ object WipeReads extends ToolCommand[Args] {
       else if (getExtension(inFile.toString.toLowerCase) == "gtf")
         makeIntervalFromGtf
       else
-        throw new IllegalArgumentException("Unexpected interval file type: " + inFile.getPath)
+        throw new IllegalArgumentException(
+          "Unexpected interval file type: " + inFile.getPath)
 
     iterFunc(inFile).toList
       .sortBy(x => (x.getContig, x.getStart, x.getEnd))
@@ -146,7 +149,9 @@ object WipeReads extends ToolCommand[Args] {
         (acc, x) => {
           acc match {
             case head :: tail if x.intersects(head) =>
-              new Interval(x.getContig, min(x.getStart, head.getStart), max(x.getEnd, head.getEnd)) :: tail
+              new Interval(x.getContig,
+                           min(x.getStart, head.getStart),
+                           max(x.getEnd, head.getEnd)) :: tail
             case _ => x :: acc
           }
         }
@@ -189,14 +194,23 @@ object WipeReads extends ToolCommand[Args] {
       val getIndex = in.getFileHeader.getSequenceIndex _
       if (getIndex(iv.getContig) > -1)
         Some(new QueryInterval(getIndex(iv.getContig), iv.getStart, iv.getEnd))
-      else if (iv.getContig.startsWith("chr") && getIndex(iv.getContig.substring(3)) > -1) {
+      else if (iv.getContig.startsWith("chr") && getIndex(
+                 iv.getContig.substring(3)) > -1) {
         logger.warn("Removing 'chr' prefix from interval " + iv.toString)
-        Some(new QueryInterval(getIndex(iv.getContig.substring(3)), iv.getStart, iv.getEnd))
-      } else if (!iv.getContig.startsWith("chr") && getIndex("chr" + iv.getContig) > -1) {
+        Some(
+          new QueryInterval(getIndex(iv.getContig.substring(3)),
+                            iv.getStart,
+                            iv.getEnd))
+      } else if (!iv.getContig.startsWith("chr") && getIndex(
+                   "chr" + iv.getContig) > -1) {
         logger.warn("Adding 'chr' prefix to interval " + iv.toString)
-        Some(new QueryInterval(getIndex("chr" + iv.getContig), iv.getStart, iv.getEnd))
+        Some(
+          new QueryInterval(getIndex("chr" + iv.getContig),
+                            iv.getStart,
+                            iv.getEnd))
       } else {
-        logger.warn("Sequence " + iv.getContig + " does not exist in alignment")
+        logger.warn(
+          "Sequence " + iv.getContig + " does not exist in alignment")
         None
       }
     }
@@ -211,18 +225,19 @@ object WipeReads extends ToolCommand[Args] {
       * @param ivtm mutable mapping of a chromosome and its interval tree
       * @return
       */
-    def alignmentBlockOverlaps(rec: SAMRecord, ivtm: IntervalTreeMap[_]): Boolean =
-    // if SAMRecord is not spliced, assume queryOverlap has done its job
-    // otherwise check for alignment block overlaps in our interval list
-    // using raw SAMString to bypass cigar string decoding
+    def alignmentBlockOverlaps(rec: SAMRecord,
+                               ivtm: IntervalTreeMap[_]): Boolean =
+      // if SAMRecord is not spliced, assume queryOverlap has done its job
+      // otherwise check for alignment block overlaps in our interval list
+      // using raw SAMString to bypass cigar string decoding
       if (rec.getSAMString.split("\t")(5).contains("N"))
         rec.getAlignmentBlocks.asScala
           .exists(
             x =>
               ivtm.containsOverlapping(
                 new Interval(rec.getReferenceName,
-                  x.getReferenceStart,
-                  x.getReferenceStart + x.getLength - 1)))
+                             x.getReferenceStart,
+                             x.getReferenceStart + x.getLength - 1)))
       else
         true
 
@@ -276,7 +291,7 @@ object WipeReads extends ToolCommand[Args] {
       )
 
     lazy val filteredOutSet: BloomFilter[SAMRecord] = readyBam
-      // query BAM file with intervals
+    // query BAM file with intervals
       .queryOverlapping(queryIntervals)
       // for compatibility
       .asScala
@@ -287,18 +302,20 @@ object WipeReads extends ToolCommand[Args] {
       // filter on specific read group IDs
       .filter(x => rgFilter(x))
       // fold starting from empty set
-      .foldLeft(BloomFilter.create(SAMFunnel, bloomSize.toInt, bloomFp))((acc, rec) => {
-      acc.put(rec)
-      if (rec.getReadPairedFlag) acc.put(makeMockPair(rec))
-      acc
-    })
+      .foldLeft(BloomFilter.create(SAMFunnel, bloomSize.toInt, bloomFp))(
+        (acc, rec) => {
+          acc.put(rec)
+          if (rec.getReadPairedFlag) acc.put(makeMockPair(rec))
+          acc
+        })
 
     if (filterOutMulti)
       (rec: SAMRecord) => filteredOutSet.mightContain(rec)
     else
       (rec: SAMRecord) => {
         if (rec.getReadPairedFlag)
-          filteredOutSet.mightContain(rec) && filteredOutSet.mightContain(makeMockPair(rec))
+          filteredOutSet.mightContain(rec) && filteredOutSet.mightContain(
+            makeMockPair(rec))
         else
           filteredOutSet.mightContain(rec)
       }
