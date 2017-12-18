@@ -8,7 +8,7 @@ class ArgsParser(toolCommand: ToolCommand[Args])
     extends AbstractOptParser[Args](toolCommand) {
 
   head(s"""
-          |$cmdName - Region-based reads removal from an indexed BAM file
+          |${toolCommand.toolName} - Region-based reads removal from an indexed BAM file
       """.stripMargin)
 
   opt[File]('I', "input_file") required () valueName "<bam>" action { (x, c) =>

@@ -354,4 +354,27 @@ object WipeReads extends ToolCommand[Args] {
       filteredOutBam.foreach(x => x.close())
     }
   }
+
+  def descriptionText: String =
+    """
+      |WipeReads is a tool for removing reads from indexed BAM files that are inside a user defined region. It takes pairing
+      |information into account and can be set to remove reads if one of the pairs maps outside of the target region. An
+      |application example is to remove reads mapping to known ribosomal RNA regions (using a supplied BED file containing
+      |intervals for these regions).""".stripMargin
+
+  def manualText: String =
+    """This tool will remove BAM records that overlaps a set of given regions.
+       |By default, if the removed reads are also mapped to other regions outside
+       |the given ones, they will also be removed.
+       |This tool outputs a bam file containing all the reads not inside the ribosomal region.
+       |It can optionally output a bam file with only the reads inside the ribosomal region.""".stripMargin
+
+  def exampleText: String =
+    //example unsafe because input files do not exist.
+    unsafeExample("--input_file",
+            "myBam.bam",
+            "--interval_file",
+            "myRibosomal_regions.bed",
+            "--output_file",
+            "myFilteredBam.bam")
 }
