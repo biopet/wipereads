@@ -38,9 +38,9 @@ object WipeReads extends ToolCommand[Args] {
       prepInBam(cmdArgs.inputBam),
       prepOutBam(cmdArgs.outputBam,
                  cmdArgs.inputBam,
-                 writeIndex = !cmdArgs.noMakeIndex),
+                 writeIndex = cmdArgs.makeIndex),
       cmdArgs.filteredOutBam.map(x =>
-        prepOutBam(x, cmdArgs.inputBam, writeIndex = !cmdArgs.noMakeIndex))
+        prepOutBam(x, cmdArgs.inputBam, writeIndex = cmdArgs.makeIndex))
     )
 
     logger.info("Done")
@@ -370,11 +370,14 @@ object WipeReads extends ToolCommand[Args] {
        |It can optionally output a bam file with only the reads inside the ribosomal region.""".stripMargin
 
   def exampleText: String =
+    """An input file, interval file and output file are required. The output BAM can be
+      |indexed. Example: """.stripMargin +
     //example unsafe because input files do not exist.
     unsafeExample("--input_file",
             "myBam.bam",
             "--interval_file",
             "myRibosomal_regions.bed",
             "--output_file",
-            "myFilteredBam.bam")
+            "myFilteredBam.bam",
+            "--make_index", "yes")
 }

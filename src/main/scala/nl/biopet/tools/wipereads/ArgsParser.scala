@@ -48,10 +48,10 @@ class ArgsParser(toolCommand: ToolCommand[Args])
   } text
     "Whether to remove multiple-mapped reads outside the target regions (default: yes)"
 
-  opt[Unit]("no_make_index") optional () action { (_, c) =>
-    c.copy(noMakeIndex = true)
+  opt[Unit]("make_index") optional () action { (_, c) =>
+    c.copy(makeIndex = false)
   } text
-    "Whether to index output BAM file or not (default: yes)"
+    "Whether to index output BAM file (default: no)"
 
   note("\nGTF-only options:")
 
