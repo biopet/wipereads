@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2014 Sequencing Analysis Support Core - Leiden University Medical Center
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.wipereads
 
 import java.io.File
@@ -15,7 +36,7 @@ import scala.math.{max, min}
 
 object WipeReads extends ToolCommand[Args] {
   def emptyArgs: Args = Args()
-  def argsParser = new ArgsParser(toolName)
+  def argsParser = new ArgsParser(this)
   def main(args: Array[String]): Unit = {
     val cmdArgs = cmdArrayToArgs(args)
 
@@ -38,9 +59,9 @@ object WipeReads extends ToolCommand[Args] {
       prepInBam(cmdArgs.inputBam),
       prepOutBam(cmdArgs.outputBam,
                  cmdArgs.inputBam,
-                 writeIndex = !cmdArgs.noMakeIndex),
+                 writeIndex = cmdArgs.makeIndex),
       cmdArgs.filteredOutBam.map(x =>
-        prepOutBam(x, cmdArgs.inputBam, writeIndex = !cmdArgs.noMakeIndex))
+        prepOutBam(x, cmdArgs.inputBam, writeIndex = cmdArgs.makeIndex))
     )
 
     logger.info("Done")
@@ -354,4 +375,31 @@ object WipeReads extends ToolCommand[Args] {
       filteredOutBam.foreach(x => x.close())
     }
   }
+
+  def descriptionText: String =
+    """
+      |WipeReads is a tool for removing reads from indexed BAM files that are inside a user defined region. It takes pairing
+      |information into account and can be set to remove reads if one of the pairs maps outside of the target region. An
+      |application example is to remove reads mapping to known ribosomal RNA regions (using a supplied BED file containing
+      |intervals for these regions).""".stripMargin
+
+  def manualText: String =
+    """This tool will remove BAM records that overlaps a set of given regions.
+       |By default, if the removed reads are also mapped to other regions outside
+       |the given ones, they will also be removed.
+       |This tool outputs a bam file containing all the reads not inside the ribosomal region.
+       |It can optionally output a bam file with only the reads inside the ribosomal region.""".stripMargin
+
+  def exampleText: String =
+    """An input file, interval file and output file are required. The output BAM can be
+      |indexed. Example: """.stripMargin +
+      //example unsafe because input files do not exist.
+      unsafeExample("--input_file",
+                    "myBam.bam",
+                    "--interval_file",
+                    "myRibosomal_regions.bed",
+                    "--output_file",
+                    "myFilteredBam.bam",
+                    "--make_index",
+                    "yes")
 }

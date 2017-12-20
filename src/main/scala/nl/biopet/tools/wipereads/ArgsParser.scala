@@ -1,13 +1,35 @@
+/*
+ * Copyright (c) 2014 Sequencing Analysis Support Core - Leiden University Medical Center
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.wipereads
 
 import java.io.File
 
-import nl.biopet.utils.tool.AbstractOptParser
+import nl.biopet.utils.tool.{AbstractOptParser, ToolCommand}
 
-class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
+class ArgsParser(toolCommand: ToolCommand[Args])
+    extends AbstractOptParser[Args](toolCommand) {
 
   head(s"""
-          |$cmdName - Region-based reads removal from an indexed BAM file
+          |${toolCommand.toolName} - Region-based reads removal from an indexed BAM file
       """.stripMargin)
 
   opt[File]('I', "input_file") required () valueName "<bam>" action { (x, c) =>
@@ -47,10 +69,10 @@ class ArgsParser(cmdName: String) extends AbstractOptParser[Args](cmdName) {
   } text
     "Whether to remove multiple-mapped reads outside the target regions (default: yes)"
 
-  opt[Unit]("no_make_index") optional () action { (_, c) =>
-    c.copy(noMakeIndex = true)
+  opt[Unit]("make_index") optional () action { (_, c) =>
+    c.copy(makeIndex = false)
   } text
-    "Whether to index output BAM file or not (default: yes)"
+    "Whether to index output BAM file (default: no)"
 
   note("\nGTF-only options:")
 
