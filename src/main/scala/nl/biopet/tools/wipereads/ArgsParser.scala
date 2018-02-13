@@ -45,9 +45,8 @@ class ArgsParser(toolCommand: ToolCommand[Args])
     if (x.exists) success else failure("Target regions file not found")
   } text "Interval BED file"
 
-  opt[File]('o', "output_file") required () valueName "<bam>" action {
-    (x, c) =>
-      c.copy(outputBam = x)
+  opt[File]('o', "output_file") required () valueName "<bam>" action { (x, c) =>
+    c.copy(outputBam = x)
   } text "Output BAM file"
 
   opt[File]('f', "discarded_file") optional () valueName "<bam>" action {

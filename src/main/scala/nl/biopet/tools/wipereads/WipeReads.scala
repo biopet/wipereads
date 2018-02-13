@@ -125,8 +125,7 @@ object WipeReads extends ToolCommand[Args] {
         // zip exonStarts and exonEnds, note the index was reversed because we did .reverse above
         .map(x => (x._1, x._2(1).zip(x._2(0))))
         // make Intervals, accounting for the fact that refFlat coordinates are 0-based
-        .map(x =>
-          x._2.map(y => new Interval(x._1, y._1.toInt + 1, y._2.toInt)))
+        .map(x => x._2.map(y => new Interval(x._1, y._1.toInt + 1, y._2.toInt)))
         // flatten sublist
         .flatten
 
@@ -211,7 +210,8 @@ object WipeReads extends ToolCommand[Args] {
       * @param iv input interval
       * @return
       */
-    def makeQueryInterval(in: SamReader, iv: Interval): Option[QueryInterval] = {
+    def makeQueryInterval(in: SamReader,
+                          iv: Interval): Option[QueryInterval] = {
       val getIndex = in.getFileHeader.getSequenceIndex _
       if (getIndex(iv.getContig) > -1)
         Some(new QueryInterval(getIndex(iv.getContig), iv.getStart, iv.getEnd))
@@ -230,8 +230,7 @@ object WipeReads extends ToolCommand[Args] {
                             iv.getStart,
                             iv.getEnd))
       } else {
-        logger.warn(
-          "Sequence " + iv.getContig + " does not exist in alignment")
+        logger.warn("Sequence " + iv.getContig + " does not exist in alignment")
         None
       }
     }
