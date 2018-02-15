@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2014 Biopet
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.wipereads
 
 import java.io.File
@@ -184,7 +205,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
     //       it is highly unlikely in our test cases as we are setting a very low FP rate
     //       and only filling the filter with a few items
     val filterNotFunc =
-    makeFilterNotFunction(intervals, sBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            sBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     // by default, set elements are SAM record read names
     filterNotFunc(sBamRecs1.head) shouldBe false
     filterNotFunc(sBamRecs1(1)) shouldBe true
@@ -202,7 +226,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("P", 191, 480)
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, sBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            sBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(sBamRecs1.head) shouldBe false
     filterNotFunc(sBamRecs1(1)) shouldBe true
     filterNotFunc(sBamRecs1(2)) shouldBe true
@@ -217,7 +244,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 881, 1000) // overlaps first exon of r05
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, sBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            sBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(sBamRecs1.head) shouldBe false
     filterNotFunc(sBamRecs1(1)) shouldBe false
     filterNotFunc(sBamRecs1(2)) shouldBe false
@@ -233,7 +263,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 900, 920)
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, sBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            sBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(sBamRecs1.head) shouldBe false
     filterNotFunc(sBamRecs1(1)) shouldBe false
     filterNotFunc(sBamRecs1(2)) shouldBe false
@@ -250,7 +283,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrR", 500, 505)
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, sBamFile5, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            sBamFile5,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(sBamRecs5.head) shouldBe true
     filterNotFunc(sBamRecs5(1)) shouldBe false
     filterNotFunc(sBamRecs5(2)) shouldBe false
@@ -265,10 +301,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 991, 1000) // overlaps nothing; lies in the spliced region of r05
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      sBamFile1,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      filterOutMulti = false)
+                                              sBamFile1,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              filterOutMulti = false)
     filterNotFunc(sBamRecs1.head) shouldBe false
     filterNotFunc(sBamRecs1(1)) shouldBe false
     filterNotFunc(sBamRecs1(2)) shouldBe true
@@ -284,10 +320,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 451, 480)
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      sBamFile2,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      minMapQ = 60)
+                                              sBamFile2,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              minMapQ = 60)
     filterNotFunc(sBamRecs2.head) shouldBe false
     // r01 is not in since it is below the MAPQ threshold
     filterNotFunc(sBamRecs2(1)) shouldBe false
@@ -305,11 +341,11 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 451, 480)
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      sBamFile2,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      minMapQ = 60,
-      filterOutMulti = false)
+                                              sBamFile2,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              minMapQ = 60,
+                                              filterOutMulti = false)
     filterNotFunc(sBamRecs2.head) shouldBe false
     filterNotFunc(sBamRecs2(1)) shouldBe false
     // this r01 is not in since it is below the MAPQ threshold
@@ -328,10 +364,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 451, 480)
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      sBamFile2,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      readGroupIds = Set("002", "003"))
+                                              sBamFile2,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              readGroupIds = Set("002", "003"))
     filterNotFunc(sBamRecs2.head) shouldBe false
     // only r01 is in the set since it is RG 002
     filterNotFunc(sBamRecs2(1)) shouldBe true
@@ -350,7 +386,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 991, 1000) // overlaps nothing; lies in the spliced region of r05
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, pBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            pBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(pBamRecs1.head) shouldBe false
     filterNotFunc(pBamRecs1(1)) shouldBe false
     filterNotFunc(pBamRecs1(2)) shouldBe true
@@ -372,7 +411,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 891, 1000)
     )
     val filterNotFunc =
-      makeFilterNotFunction(intervals, pBamFile1, bloomSize = bloomSize, bloomFp = bloomFp)
+      makeFilterNotFunction(intervals,
+                            pBamFile1,
+                            bloomSize = bloomSize,
+                            bloomFp = bloomFp)
     filterNotFunc(pBamRecs1.head) shouldBe false
     filterNotFunc(pBamRecs1(1)) shouldBe false
     filterNotFunc(pBamRecs1(2)) shouldBe false
@@ -396,10 +438,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 991, 1000) // overlaps nothing; lies in the spliced region of r05
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      pBamFile1,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      filterOutMulti = false)
+                                              pBamFile1,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              filterOutMulti = false)
     filterNotFunc(pBamRecs1.head) shouldBe false
     filterNotFunc(pBamRecs1(1)) shouldBe false
     filterNotFunc(pBamRecs1(2)) shouldBe false
@@ -422,10 +464,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 451, 480)
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      pBamFile2,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      minMapQ = 60)
+                                              pBamFile2,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              minMapQ = 60)
     // r01 is not in since it is below the MAPQ threshold
     filterNotFunc(pBamRecs2.head) shouldBe false
     filterNotFunc(pBamRecs2(1)) shouldBe false
@@ -445,10 +487,10 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
       new Interval("chrQ", 451, 480)
     )
     val filterNotFunc = makeFilterNotFunction(intervals,
-      pBamFile2,
-      bloomSize = bloomSize,
-      bloomFp = bloomFp,
-      readGroupIds = Set("002", "003"))
+                                              pBamFile2,
+                                              bloomSize = bloomSize,
+                                              bloomFp = bloomFp,
+                                              readGroupIds = Set("002", "003"))
     // only r01 is in the set since it is RG 002
     filterNotFunc(pBamRecs2.head) shouldBe false
     filterNotFunc(pBamRecs2(1)) shouldBe false
@@ -462,7 +504,8 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
     filterNotFunc(pBamRecs2(9)) shouldBe false
   }
   @Test def testWriteSingleBamDefault(): Unit = {
-    val mockFilterOutFunc = (r: SAMRecord) => Set("r03", "r04", "r05").contains(r.getReadName)
+    val mockFilterOutFunc = (r: SAMRecord) =>
+      Set("r03", "r04", "r05").contains(r.getReadName)
     val outBam = mock[SAMFileWriter]
 
     val stdout = new java.io.ByteArrayOutputStream
@@ -483,16 +526,17 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
   }
 
   @Test def testWriteSingleBamAndFilteredBAM(): Unit = {
-    val mockFilterOutFunc = (r: SAMRecord) => Set("r03", "r04", "r05").contains(r.getReadName)
+    val mockFilterOutFunc = (r: SAMRecord) =>
+      Set("r03", "r04", "r05").contains(r.getReadName)
     val outBam = mock[SAMFileWriter]
     val filtBam = Some(mock[SAMFileWriter])
 
     val stdout = new java.io.ByteArrayOutputStream
     Console.withOut(stdout) {
       writeFilteredBam(mockFilterOutFunc,
-        makeSamReader(sBamFile1),
-        outBam,
-        filteredOutBam = filtBam)
+                       makeSamReader(sBamFile1),
+                       outBam,
+                       filteredOutBam = filtBam)
     }
     stdout.toString should ===(
       "count_included\tcount_excluded\n%d\t%d\n"
@@ -500,7 +544,8 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
     )
 
     val exp = makeSamReader(sBamFile4).asScala
-    verify(filtBam.get, times(3)).addAlignment(anyObject.asInstanceOf[SAMRecord])
+    verify(filtBam.get, times(3))
+      .addAlignment(anyObject.asInstanceOf[SAMRecord])
     val obs = inOrd(filtBam.get)
     exp.foreach(x => {
       obs.verify(filtBam.get).addAlignment(x)
@@ -508,7 +553,8 @@ class WipeReadsTest extends ToolTest[Args] with MockitoSugar {
   }
 
   @Test def testWritePairBamDefault(): Unit = {
-    val mockFilterOutFunc = (r: SAMRecord) => Set("r03", "r04", "r05").contains(r.getReadName)
+    val mockFilterOutFunc = (r: SAMRecord) =>
+      Set("r03", "r04", "r05").contains(r.getReadName)
     val outBam = mock[SAMFileWriter]
 
     val stdout = new java.io.ByteArrayOutputStream
